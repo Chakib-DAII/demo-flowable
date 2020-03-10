@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="articleReview" name="Article Review" isExecutable="true">
+    <documentation>a simple process for article review before publishing.</documentation>
+    <startEvent id="startEvent1"></startEvent>
+    <userTask id="submitArticle" name="Submit Article">
+      <documentation>Authors submit an article</documentation>
+      <!--extensionElements>
+        <modeler:activiti-idm-initiator xmlns:modeler="http://flowable.org/modeler"><![CDATA[true]]></modeler:activiti-idm-initiator>
+      </extensionElements-->
+    </userTask>
+    <userTask id="reviewArticle" name="Review Article">
+      <documentation>Editors review the Article</documentation>
+    </userTask>
+    <sequenceFlow id="sid-EACCA398-0A04-4902-A8D0-49555DF2B9EE" sourceRef="startEvent1" targetRef="submitArticle"></sequenceFlow>
+    <sequenceFlow id="sid-5510C8BE-DADA-4C56-8277-54B06BAD5FB6" sourceRef="submitArticle" targetRef="reviewArticle"></sequenceFlow>
+    <exclusiveGateway id="decisionGateway" name="Decision Gateway">
+      <documentation>Decision Gateway: Article approved or rejected</documentation>
+    </exclusiveGateway>
+    <sequenceFlow id="sid-FE745835-75BE-43D0-B7E3-369A2F12231C" sourceRef="reviewArticle" targetRef="decisionGateway"></sequenceFlow>
+    <serviceTask id="publishArticle" name="Publish Article" flowable:delegateExpression="${publishArticleService}"></serviceTask>
+    <serviceTask id="sendRejectionEmail" name="Send Rejection Email" flowable:delegateExpression="${sendMailService}"></serviceTask>
+    <sequenceFlow id="rejected" name="Rejected" sourceRef="decisionGateway" targetRef="sendRejectionEmail">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!approved}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="sid-7C366946-B528-496B-B33F-CE2D4A1881F8"></endEvent>
+    <sequenceFlow id="sid-3C2D642D-EEDF-4C89-A00F-808C25721C87" sourceRef="publishArticle" targetRef="sid-7C366946-B528-496B-B33F-CE2D4A1881F8"></sequenceFlow>
+    <sequenceFlow id="approved" name="Approved" sourceRef="decisionGateway" targetRef="publishArticle">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-887CEB87-5232-4B05-B2F6-3BD650BA6F4B" sourceRef="sendRejectionEmail" targetRef="sid-7C366946-B528-496B-B33F-CE2D4A1881F8"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_articleReview">
+    <bpmndi:BPMNPlane bpmnElement="articleReview" id="BPMNPlane_articleReview">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="60.0" y="167.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="submitArticle" id="BPMNShape_submitArticle">
+        <omgdc:Bounds height="80.0" width="100.0" x="181.0" y="142.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reviewArticle" id="BPMNShape_reviewArticle">
+        <omgdc:Bounds height="80.0" width="100.0" x="360.0" y="142.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="decisionGateway" id="BPMNShape_decisionGateway">
+        <omgdc:Bounds height="40.0" width="40.0" x="510.0" y="162.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="publishArticle" id="BPMNShape_publishArticle">
+        <omgdc:Bounds height="80.0" width="100.0" x="650.0" y="51.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sendRejectionEmail" id="BPMNShape_sendRejectionEmail">
+        <omgdc:Bounds height="80.0" width="100.0" x="650.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-7C366946-B528-496B-B33F-CE2D4A1881F8" id="BPMNShape_sid-7C366946-B528-496B-B33F-CE2D4A1881F8">
+        <omgdc:Bounds height="28.0" width="28.0" x="810.0" y="168.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-EACCA398-0A04-4902-A8D0-49555DF2B9EE" id="BPMNEdge_sid-EACCA398-0A04-4902-A8D0-49555DF2B9EE">
+        <omgdi:waypoint x="89.94999924899287" y="182.0"></omgdi:waypoint>
+        <omgdi:waypoint x="181.0" y="182.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="approved" id="BPMNEdge_approved">
+        <omgdi:waypoint x="530.5" y="162.5"></omgdi:waypoint>
+        <omgdi:waypoint x="530.5" y="91.0"></omgdi:waypoint>
+        <omgdi:waypoint x="649.9999999999905" y="91.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-3C2D642D-EEDF-4C89-A00F-808C25721C87" id="BPMNEdge_sid-3C2D642D-EEDF-4C89-A00F-808C25721C87">
+        <omgdi:waypoint x="749.9499999999871" y="91.0"></omgdi:waypoint>
+        <omgdi:waypoint x="824.0" y="91.0"></omgdi:waypoint>
+        <omgdi:waypoint x="824.0" y="168.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="rejected" id="BPMNEdge_rejected">
+        <omgdi:waypoint x="530.5" y="201.44029200819676"></omgdi:waypoint>
+        <omgdi:waypoint x="530.5" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="649.9999999999565" y="280.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-887CEB87-5232-4B05-B2F6-3BD650BA6F4B" id="BPMNEdge_sid-887CEB87-5232-4B05-B2F6-3BD650BA6F4B">
+        <omgdi:waypoint x="749.9499999999999" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="824.0" y="280.0"></omgdi:waypoint>
+        <omgdi:waypoint x="824.0" y="195.94993542181027"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-5510C8BE-DADA-4C56-8277-54B06BAD5FB6" id="BPMNEdge_sid-5510C8BE-DADA-4C56-8277-54B06BAD5FB6">
+        <omgdi:waypoint x="280.95000000000005" y="182.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="182.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FE745835-75BE-43D0-B7E3-369A2F12231C" id="BPMNEdge_sid-FE745835-75BE-43D0-B7E3-369A2F12231C">
+        <omgdi:waypoint x="459.94999999999897" y="182.2072614107884"></omgdi:waypoint>
+        <omgdi:waypoint x="510.41666666666436" y="182.41666666666666"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
